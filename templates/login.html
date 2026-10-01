@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ "Create your workspace" if mode == "register" else "Welcome back" }} | Focusmate</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-story">
+      <div class="brand"><span class="brand-mark">❀</span> focusmate</div>
+      <div class="story-copy">
+        <p class="eyebrow">Personal work, with a little more clarity</p>
+        <h1>Make space for the work that matters.</h1>
+        <p class="story-text">A calm daily companion for planning, focus, and the small promises you make to yourself.</p>
+      </div>
+      <div class="story-note"><span class="pulse-dot"></span><span>Your private workspace is ready when you are.</span></div>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-panel-inner">
+        <span class="mini-label">{{ "NEW WORKSPACE" if mode == "register" else "YOUR DAILY COMPANION" }}</span>
+        <h2>{{ "Start with a clear mind." if mode == "register" else "Welcome back." }}</h2>
+        <p class="muted">{{ "Set up your private workspace in under a minute." if mode == "register" else "Sign in to pick up where you left off." }}</p>
+        {% if error %}<div class="form-error">{{ error }}</div>{% endif %}
+        {% if message %}<div class="form-success">{{ message }}</div>{% endif %}
+
+        {% if mode == "forgot" %}
+        <form method="post" action="{{ url_for('forgot_password') }}" class="auth-form">
+          <label>Email address<input name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label>
+          <button class="primary-button" type="submit">Send OTP <span>→</span></button>
+        </form>
+        <p class="auth-switch"><a href="{{ url_for('login') }}">Back to sign in</a></p>
+
+        {% elif mode == "reset" %}
+        <form method="post" action="{{ url_for('reset_password') }}" class="auth-form">
+          <label>Email address<input name="email" type="email" placeholder="you@example.com" value="{{ email or '' }}" autocomplete="email" required></label>
+          <label>One-time password (OTP)<input name="otp" type="text" placeholder="123456" inputmode="numeric" maxlength="6" required></label>
+          <label>New password<input name="new_password" type="password" placeholder="8 characters minimum" autocomplete="new-password" required></label>
+          <button class="primary-button" type="submit">Reset password <span>→</span></button>
+        </form>
+        <p class="auth-switch"><a href="{{ url_for('forgot_password') }}">Request a new OTP</a></p>
+
+        {% else %}
+        <form method="post" class="auth-form">
+          {% if mode == "register" %}
+          <label>What should we call you?<input name="name" type="text" placeholder="Your name" autocomplete="name" required></label>
+          {% endif %}
+          <label>Email address<input name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" placeholder="8 characters minimum" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" required></label>
+          <button class="primary-button" type="submit">{{ "Create workspace" if mode == "register" else "Sign in" }} <span>→</span></button>
+        </form>
+        {% if mode == "login" %}
+        <p class="auth-switch"><a href="{{ url_for('forgot_password') }}">Forgot password?</a></p>
+        {% endif %}
+        <p class="auth-switch">{{ "Already have a workspace?" if mode == "register" else "New here?" }} <a href="{{ url_for('login' if mode == 'register' else 'register') }}">{{ "Sign in" if mode == "register" else "Create an account" }}</a></p>
+        {% endif %}
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Today | Focusmate</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="app-page">
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">❀</span> focusmate</a>
+    <div class="topbar-right"><time class="date-chip" id="local-date">{{ today }}</time><time class="date-chip" id="local-clock">{{ current_time }}</time><span class="avatar">{{ current_user[0]|upper }}</span><a class="logout-link" href="{{ url_for('logout') }}">Sign out</a></div>
+  </header>
+  <main class="dashboard-grid">
+    <section class="main-column">
+      <div class="welcome-row"><div><p class="eyebrow">YOUR DAY, IN VIEW</p><h1 id="welcome-greeting" data-first-name="{{ current_user.split(' ')[0] }}">{{ greeting }}, {{ current_user.split(' ')[0] }}.</h1><p class="muted">A thoughtful day is built one clear next step at a time.</p></div><div class="completion"><strong>{{ completed }}/{{ tasks|length }}</strong><span>complete</span></div></div>
+      <div class="progress-track"><span style="width: {{ ((completed / tasks|length) * 100) if tasks|length else 0 }}%"></span></div>
+      <div class="section-heading"><div><h2>Today’s rhythm</h2><p class="muted">Your tasks, gently organised by what comes next.</p></div><button class="text-button" id="open-task">+ Add task</button></div>
+      <div class="task-list" id="task-list">
+        {% for task in tasks %}
+        <article class="task-item {{ 'is-done' if task.completed else '' }}" data-task-id="{{ task.id }}">
+          <button class="task-check" aria-label="Mark {{ task.title }} complete">{{ '✓' if task.completed else '' }}</button>
+          <div class="task-content"><div class="task-meta"><span class="task-time">{{ task.due }}</span>{% if task.priority == 'high' %}<span class="priority high">Focus</span>{% endif %}</div><h3>{{ task.title }}</h3><p>{{ task.detail }}</p></div>
+          <span class="task-arrow">↗</span>
+        </article>
+        {% else %}<div class="empty-state">Nothing on the board yet. Add the first thing you want to move forward.</div>{% endfor %}
+      </div>
+    </section>
+    <aside class="assistant-panel">
+      <div class="assistant-top"><div><span class="eyebrow">FOCUSMATE AI</span><h2>Your thinking partner</h2></div><div class="status-dot"><span></span> Ready</div></div>
+      <div class="assistant-orb"><div class="orb-ring ring-one"></div><div class="orb-ring ring-two"></div><div class="orb-core">❀</div></div>
+      <div class="assistant-response" id="assistant-response" aria-live="polite"><span class="response-symbol">⌁</span><p>Ask me about your day, a priority, technology, science, maths, or code.</p></div>
+      <div class="assistant-voice-controls"><button id="voice-reply-toggle" type="button" aria-pressed="true">Voice replies: On</button><button id="speak-button" type="button" disabled>Speak reply</button><label class="voice-choice">Reply voice<select id="assistant-voice-select" aria-label="Select spoken reply voice"><option value="">Automatic</option></select></label></div>
+      <p class="speech-status" id="speech-status" role="status" aria-live="polite">Checking spoken reply support…</p>
+      <div class="assistant-input"><input id="question" type="text" placeholder="Ask anything about your work..." autocomplete="off"><button id="voice-button" class="icon-button" title="Use voice input" aria-label="Use voice input">◉</button><button id="ask-button" class="send-button" title="Ask Focusmate" aria-label="Ask Focusmate">↑</button></div>
+      <div class="suggestions"><button data-question="What should I focus on today?">What should I focus on?</button><button data-question="Help me prioritise my work">Help me prioritise</button><button data-question="What is an API?">What is an API?</button></div>
+      <div class="assistant-foot"><span>● Voice assist available</span><span>Local unless provider configured</span></div>
+    </aside>
+  </main>
+  <dialog id="task-dialog"><form method="dialog" id="task-form"><button class="dialog-close" value="cancel" aria-label="Close">×</button><span class="eyebrow">NEW TASK</span><h2>What would move the day forward?</h2><label>Task title<input id="task-title" required placeholder="e.g. Send the project brief"></label><label>When<input id="task-due" placeholder="e.g. 14:00 or Anytime"></label><label>Context <span class="optional">optional</span><textarea id="task-detail" placeholder="A little context helps future you."></textarea></label><button class="primary-button" type="submit">Add to today <span>→</span></button></form></dialog>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
